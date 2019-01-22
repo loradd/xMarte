@@ -13,42 +13,58 @@ import org.junit.runner.RunWith
 
 import static extension org.junit.Assert.assertNotNull
 
+/************************************
+ * TODO - Split Tests *
+ ************************************/
 @RunWith(XtextRunner)
 @InjectWith(XMarteInjectorProvider)
 class XMarteParsingTest {
 
 	@Inject extension ParseHelper<Model>
-	
-	@Test def void loadModel() {
+
+	@Test def void testParseModel() {
 		'''
 			model aModel {
 				
-				allocated
-				processor
-				component aProcessor {
-					
+				component aComponent {}
+				allocated component bComponent {}
+				allocated component cComponent {
+					kind = application
+				}
+				
+				processor component aProcessor {}
+				processor component bProcessor {
+					cores = 2
+				}
+				allocated processor component cProcessor {}
+				allocated processor component dProcessor {
+					kind = executionPlatform
+					cores = 2
+				}
+				allocated processor component eProcessor {
+					kind = both
+					cores = 10
+					component subComponent {}
+				}
+				allocated processor component fProcessor {
+					kind = undef
+					cores = 100
+					allocated component subComponent {}
+				}
+				allocated processor component fProcessor {
+					kind = application
+					cores = 5
+					allocated component subComponent {
+						kind = application
+					}
+				}
+				allocated processor component gProcessor {
 					kind = executionPlatform
 					cores = 1
-					
-					allocated
-					cache
-					component aCache {
+					allocated cache component subComponent {
 						kind = application
 						level = 1
-					}
-					
-					cache
-					allocated
-					component anotherCache {
-						level = 2
-						kind = executionPlatform
-					} 
 				}
-				
-				allocated processor anotherProcessor {
-					cores = 10
-				}
-				
 			}
 		'''.parse => [assertNotNull]
 	}

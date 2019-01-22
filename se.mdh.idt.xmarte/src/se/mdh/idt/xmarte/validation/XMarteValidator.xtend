@@ -4,11 +4,10 @@
 package se.mdh.idt.xmarte.validation
 
 import org.eclipse.xtext.validation.Check
-import se.mdh.idt.xmarte.xMarte.XComponent
-
-import static se.mdh.idt.xmarte.xMarte.XMartePackage.Literals.XCOMPONENT__ALLOCATED_KIND
-import static se.mdh.idt.xmarte.xMarte.XMartePackage.Literals.XCOMPONENT__HW_CACHE_LEVEL
-import static se.mdh.idt.xmarte.xMarte.XMartePackage.Literals.XCOMPONENT__HW_PROCESSOR_CORES
+import se.mdh.idt.xmarte.xMarte.XAllocated
+import se.mdh.idt.xmarte.xMarte.XMartePackage
+import se.mdh.idt.xmarte.xMarte.XHwProcessor
+import se.mdh.idt.xmarte.xMarte.XHwCache
 
 /**
  * This class contains custom validation rules. 
@@ -26,21 +25,33 @@ class XMarteValidator extends AbstractXMarteValidator {
 	public static val HWCACHE_LEVEL_ERROR_CODE = 'hwCacheLevelError'
 	public static val HWCACHE_LEVEL_ERROR_MESSAGE = 'Illegal attribute - HwCache stereotype required'
 
-	@Check def check_Allocated_kind(XComponent it) {
-		if (isAllocatedKind && !isAllocated) {
-			error(ALLOCATED_KIND_ERROR_MESSAGE, XCOMPONENT__ALLOCATED_KIND, ALLOCATED_KIND_ERROR_CODE)
+	@Check def checkAllocatedKind(XAllocated xElement) {
+		if (xElement.hasKind && !xElement.isAllocated) {
+			error(
+				ALLOCATED_KIND_ERROR_MESSAGE, 
+				XMartePackage.Literals.XALLOCATED__HAS_KIND,
+				ALLOCATED_KIND_ERROR_CODE
+			)
 		}
 	}
 
-	@Check def check_HwProcessor_cores(XComponent it) {
-		if (isHwProcessorCores && !isHwProcessor) {
-			error(HWPROCESSOR_CORES_ERROR_MESSAGE, XCOMPONENT__HW_PROCESSOR_CORES, HWPROCESSOR_CORES_ERROR_CODE)
+	@Check def checkHwProcessorCores(XHwProcessor xElement) {
+		if (xElement.hasCores && !xElement.isHwProcessor) {
+			error(
+				HWPROCESSOR_CORES_ERROR_MESSAGE, 
+				XMartePackage.Literals.XHW_PROCESSOR__HAS_CORES,
+				HWPROCESSOR_CORES_ERROR_CODE
+			)
 		}
 	}
 
-	@Check def check_HwCache_level(XComponent it) {
-		if (isHwCacheLevel && !isHwCache) {
-			error(HWCACHE_LEVEL_ERROR_MESSAGE, XCOMPONENT__HW_CACHE_LEVEL, HWCACHE_LEVEL_ERROR_CODE)
+	@Check def check_HwCache_level(XHwCache xElement) {
+		if (xElement.hasLevel && !xElement.isHwCache) {
+			error(
+				HWCACHE_LEVEL_ERROR_MESSAGE, 
+				XMartePackage.Literals.XHW_CACHE__HAS_LEVEL,
+				HWCACHE_LEVEL_ERROR_CODE)
 		}
 	}
+
 }

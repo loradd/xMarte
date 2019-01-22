@@ -1,16 +1,19 @@
 package se.mdh.idt.xmarte.ui.editor.model.transformation
 
+import java.util.Optional
+import org.eclipse.papyrus.MARTE.MARTE_DesignModel.HRM.HwLogical.HwComputing.HwProcessor
+import org.eclipse.papyrus.MARTE.MARTE_DesignModel.HRM.HwLogical.HwStorage.HwMemory.HwCache
+import org.eclipse.papyrus.MARTE.MARTE_Foundations.Alloc.Allocated
 import org.eclipse.uml2.uml.Component
 import org.eclipse.uml2.uml.Element
 import org.eclipse.uml2.uml.Model
 import org.eclipse.uml2.uml.NamedElement
-import java.util.Optional
 
 class UML2XMarte {
 
 	def static dispatch CharSequence transform(Model model) 
 	'''
-		model «model.legalName» {
+		model «model.nameOrDefault» {
 			«FOR component : model.components»
 				«transform(component)»
 			«ENDFOR»
@@ -20,89 +23,79 @@ class UML2XMarte {
 
 	def static dispatch CharSequence transform(Component component)
 	'''
+		«IF component.isAllocated»allocated «ENDIF»
 		«IF component.isHwProcessor»processor «ENDIF»
 		«IF component.isHwCache»cache «ENDIF»
-		«IF component.isAllocated»allocated «ENDIF»
-		component «component.legalName» {
+		component «component.nameOrDefault» {
+			«IF component.hasAllocatedKind»kind = «component.allocatedKind»«ENDIF»
 			«IF component.hasHwProcessorCores»cores = «component.hwProcessorCores»«ENDIF»
 			«IF component.hasHwCacheLevel»level = «component.hwCacheLevel»«ENDIF»
-			«IF component.hasAllocatedKind»kind = «component.allocatedKind»«ENDIF»
 			«FOR subComponent : component.components»
 				«transform(subComponent)»
 			«ENDFOR»
 		}
 	'''
 
-	def private static hasLegalName(NamedElement namedElement) {
-		!namedElement.name.nullOrEmpty
-	}
-
-	def private static getLegalName(NamedElement namedElement) {
-		if(namedElement.hasLegalName) namedElement.name else "default_name"
+	def private static getNameOrDefault(NamedElement namedElement) {
+		if(!namedElement.name.nullOrEmpty) namedElement.name else "default_name"
 	}
 
 	def private static getComponents(Element element) {
 		element.ownedElements.filter(Component)
 	}
 
-	def private static isHwProcessor(Component component) {
-		Optional.ofNullable(component)
-				.map[appliedStereotypes.exists["HwProcessor" == name]]
-				.orElse(false)
-	}
-	
-	def private static hasHwProcessorCores(Component component) {
-		Optional.ofNullable(component)
-				.map[appliedStereotypes.findFirst["HwProcessor" == name]]
-				.map[component.getValue(it, "nbCores")]
-				.isPresent
-	}
-	
-	def private static getHwProcessorCores(Component component) {
-		Optional.ofNullable(component)
-				.map[appliedStereotypes.findFirst["HwProcessor" == name]]
-				.map[component.getValue(it, "nbCores")]
-				.get
+	def private static isAllocated(Element element) {
+		Optional.ofNullable(element)
+			.map[stereotypeApplications.filter(Allocated).head]
+			.isPresent
 	}
 
-	def private static isHwCache(Component component) {
-		Optional.ofNullable(component)
-				.map[appliedStereotypes.exists["HwCache" == name]]
-				.orElse(false)
+	def private static isHwProcessor(Element element) {
+		Optional.ofNullable(element)
+			.map[stereotypeApplications.filter(HwProcessor).head]
+			.isPresent
 	}
 	
-	def private static hasHwCacheLevel(Component component) {
-		Optional.ofNullable(component)
-				.map[appliedStereotypes.findFirst["HwCache" == name]]
-				.map[component.getValue(it, 'level')]
-				.isPresent
+	def private static isHwCache(Element element) {
+		Optional.ofNullable(element)
+			.map[stereotypeApplications.filter(HwCache).head]
+			.isPresent
 	}
 	
-	def private static getHwCacheLevel(Component component) {
-		Optional.ofNullable(component)
-				.map[appliedStereotypes.findFirst["HwCache" == name]]
-				.map[component.getValue(it, 'level')]
-				.get
+	def private static hasAllocatedKind(Element element) {
+		Optional.ofNullable(element)
+			.map[stereotypeApplications.filter(Allocated).head]
+			.map[kind].isPresent
 	}
 	
-	def private static isAllocated(Component component) {
-		Optional.ofNullable(component)
-				.map[appliedStereotypes.exists["Allocated" == name]]
-				.orElse(false)
+	def private static hasHwProcessorCores(Element element) {
+		Optional.ofNullable(element)
+			.map[stereotypeApplications.filter(HwProcessor).head]
+			.map[nbCores].isPresent
 	}
 	
-	def private static hasAllocatedKind(Component component) {
-		Optional.ofNullable(component)
-				.map[appliedStereotypes.findFirst["Allocated" == name]]
-				.map[component.getValue(it, "kind")]
-				.isPresent
+	def private static hasHwCacheLevel(Element element) {
+		Optional.ofNullable(element)
+			.map[stereotypeApplications.filter(HwCache).head]
+			.map[level].isPresent
 	}
 	
-	def private static getAllocatedKind(Component component) {
-		Optional.ofNullable(component)
-				.map[appliedStereotypes.findFirst["Allocated" == name]]
-				.map[component.getValue(it, "kind")]
-				.get
+	def private static getAllocatedKind(Element element) {
+		Optional.ofNullable(element)
+			.map[stereotypeApplications.filter(Allocated).head]
+			.map[kind].get
+	}
+		
+	def private static getHwProcessorCores(Element element) {
+		Optional.ofNullable(element)
+			.map[stereotypeApplications.filter(HwProcessor).head]
+			.map[nbCores].get
 	}
 	
+	def private static getHwCacheLevel(Element element) {
+		Optional.ofNullable(element)
+			.map[stereotypeApplications.filter(HwCache).head]
+			.map[level].get
+	}
+
 }

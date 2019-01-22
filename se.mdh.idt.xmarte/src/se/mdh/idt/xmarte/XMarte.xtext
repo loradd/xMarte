@@ -6,24 +6,48 @@ generate xMarte "http://www.mdh.se/idt/xmarte/XMarte"
 
 Model returns uml::Model:
 	'model' name = ID '{'
-		packagedElement += XComponent*
+		packagedElement += Component*
 	'}'	
 ;
 
-XComponent returns uml::Component: {XComponent}(
-	(allocated ?= 'allocated'? & hwProcessor ?= 'processor'? & hwCache ?= 'cache'?)
-	'component' name = ID '{'
-		(
-			(allocatedKind ?= 'kind' '=' allocatedKindValue = AllocationEndKind)? &
-			(hwProcessorCores ?= 'cores' '=' hwProcessorCoresValue = INT)? &
-			(hwCacheLevel ?= 'level' '=' hwCacheLevelValue = INT)?
-		)
-		(
-			packagedElement += XComponent*
-		)
-	'}'
-);
+Component returns uml::Component: 
+	XComponent // | possible subclasses
+;
 
-enum AllocationEndKind:
+XComponent returns XComponent:
+	XAllocated? XHwProcessor? XHwCache?
+	'component' name = ID '{'
+		XAllocatedKind?
+		XHwProcessorCores?
+		XHwCacheLevel?
+		packagedElement += Component*
+	'}'
+;
+
+fragment XAllocated returns XAllocated:
+	allocated ?= 'allocated'
+;
+
+fragment XAllocatedKind returns XAllocated:
+	hasKind ?= 'kind' '=' kind = XAllocationEndKind
+;
+
+fragment XHwProcessor returns XHwProcessor:
+	hwProcessor ?= 'processor'
+;
+
+fragment XHwProcessorCores returns XHwProcessor:
+	hasCores ?= 'cores' '=' cores = INT
+;
+
+fragment XHwCache returns XHwCache:
+	hwCache ?= 'cache'
+;
+
+fragment XHwCacheLevel returns XHwCache:
+	hasLevel ?= 'level' '=' level = INT
+;
+
+enum XAllocationEndKind:
 	undef | executionPlatform | application | both
 ;

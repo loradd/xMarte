@@ -12,23 +12,27 @@ import se.mdh.idt.xmarte.xMarte.XComponent
  */
 class XMarteProposalProvider extends AbstractXMarteProposalProvider {
 
+	val xComponentConstraints = #{
+		[String keyword, XComponent xComponent | keyword == 'kind'  && !xComponent.isAllocated],
+		[String keyword, XComponent xComponent | keyword == 'level' && !xComponent.isHwCache],
+		[String keyword, XComponent xComponent | keyword == 'cores' && !xComponent.isHwProcessor]
+	}
+
 	override completeKeyword(Keyword keyword, ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		context.currentModel.completeKeyword(keyword, context, acceptor)
 	}
-
+	
 	def dispatch void completeKeyword(
-		XComponent xComponent,
-		Keyword keyword,
-		ContentAssistContext context,
+		XComponent xComponent, 
+		Keyword keyword, 
+		ContentAssistContext context, 
 		ICompletionProposalAcceptor acceptor
 	) {
-		if('kind'.equals(keyword.value) && !xComponent.isAllocated) return;
-		if('level'.equals(keyword.value) && !xComponent.isHwCache) return;
-		if('cores'.equals(keyword.value) && !xComponent.isHwProcessor) return;
-		if('cache'.equals(keyword.value) && !xComponent.isHwProcessor) return;
-		super.completeKeyword(keyword, context, acceptor)
+		if (!xComponentConstraints.exists[apply(keyword.value, xComponent)]) {
+			super.completeKeyword(keyword, context, acceptor)
+		}
 	}
-
+	
 	def dispatch void completeKeyword(
 		EObject eObject,
 		Keyword keyword,
