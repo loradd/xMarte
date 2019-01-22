@@ -36,8 +36,6 @@ class XMarte2UML {
 	static val hwProcessorStereotype = hwComputingProfile.allOwnedElements.filter(Stereotype).findFirst[name == "HwProcessor"]
 	static val hwCacheStereotype = hwMemoryProfile.allOwnedElements.filter(Stereotype).findFirst[name == "HwCache"] 
 	
-	// model.appliedProfiles.toList.forEach[profile|model.unapplyProfile(profile)]
-		
 	def static void transform(Model model, Model xModel) {
 		
 		Optional.ofNullable(model)

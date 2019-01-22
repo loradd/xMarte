@@ -11,41 +11,28 @@ Model returns uml::Model:
 ;
 
 Component returns uml::Component: 
-	XComponent // | possible subclasses
+	XComponent // | subclasses
 ;
 
 XComponent returns XComponent:
-	XAllocated? XHwProcessor? XHwCache?
+	// stereotypes
+	(
+		allocated ?= 'allocated'? & 
+		hwProcessor ?= 'processor'? & 
+		hwCache ?= 'cache'?
+	)
 	'component' name = ID '{'
-		XAllocatedKind?
-		XHwProcessorCores?
-		XHwCacheLevel?
-		packagedElement += Component*
+		// attributes
+		(
+			(hasKind ?= 'kind' '=' kind = XAllocationEndKind)? &
+			(hasCores ?= 'cores' '=' cores = INT)? &
+			(hasLevel ?= 'level' '=' level = INT)?
+		)
+		// references
+		(
+			packagedElement += Component*
+		)
 	'}'
-;
-
-fragment XAllocated returns XAllocated:
-	allocated ?= 'allocated'
-;
-
-fragment XAllocatedKind returns XAllocated:
-	hasKind ?= 'kind' '=' kind = XAllocationEndKind
-;
-
-fragment XHwProcessor returns XHwProcessor:
-	hwProcessor ?= 'processor'
-;
-
-fragment XHwProcessorCores returns XHwProcessor:
-	hasCores ?= 'cores' '=' cores = INT
-;
-
-fragment XHwCache returns XHwCache:
-	hwCache ?= 'cache'
-;
-
-fragment XHwCacheLevel returns XHwCache:
-	hasLevel ?= 'level' '=' level = INT
 ;
 
 enum XAllocationEndKind:

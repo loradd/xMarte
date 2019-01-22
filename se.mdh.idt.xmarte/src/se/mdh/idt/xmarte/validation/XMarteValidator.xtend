@@ -4,10 +4,8 @@
 package se.mdh.idt.xmarte.validation
 
 import org.eclipse.xtext.validation.Check
-import se.mdh.idt.xmarte.xMarte.XAllocated
+import se.mdh.idt.xmarte.xMarte.XComponent
 import se.mdh.idt.xmarte.xMarte.XMartePackage
-import se.mdh.idt.xmarte.xMarte.XHwProcessor
-import se.mdh.idt.xmarte.xMarte.XHwCache
 
 /**
  * This class contains custom validation rules. 
@@ -25,31 +23,31 @@ class XMarteValidator extends AbstractXMarteValidator {
 	public static val HWCACHE_LEVEL_ERROR_CODE = 'hwCacheLevelError'
 	public static val HWCACHE_LEVEL_ERROR_MESSAGE = 'Illegal attribute - HwCache stereotype required'
 
-	@Check def checkAllocatedKind(XAllocated xElement) {
-		if (xElement.hasKind && !xElement.isAllocated) {
+	@Check def checkAllocatedKind(XComponent xComponent) {
+		if (xComponent.hasKind && !xComponent.isAllocated) {
 			error(
 				ALLOCATED_KIND_ERROR_MESSAGE, 
-				XMartePackage.Literals.XALLOCATED__HAS_KIND,
+				XMartePackage.Literals.XCOMPONENT__HAS_KIND,
 				ALLOCATED_KIND_ERROR_CODE
 			)
 		}
 	}
 
-	@Check def checkHwProcessorCores(XHwProcessor xElement) {
-		if (xElement.hasCores && !xElement.isHwProcessor) {
+	@Check def checkHwProcessorCores(XComponent xComponent) {
+		if (xComponent.hasCores && !xComponent.isHwProcessor) {
 			error(
 				HWPROCESSOR_CORES_ERROR_MESSAGE, 
-				XMartePackage.Literals.XHW_PROCESSOR__HAS_CORES,
+				XMartePackage.Literals.XCOMPONENT__HAS_CORES,
 				HWPROCESSOR_CORES_ERROR_CODE
 			)
 		}
 	}
 
-	@Check def check_HwCache_level(XHwCache xElement) {
-		if (xElement.hasLevel && !xElement.isHwCache) {
+	@Check def check_HwCache_level(XComponent xComponent) {
+		if (xComponent.hasLevel && !xComponent.isHwCache) {
 			error(
 				HWCACHE_LEVEL_ERROR_MESSAGE, 
-				XMartePackage.Literals.XHW_CACHE__HAS_LEVEL,
+				XMartePackage.Literals.XCOMPONENT__HAS_LEVEL,
 				HWCACHE_LEVEL_ERROR_CODE)
 		}
 	}
